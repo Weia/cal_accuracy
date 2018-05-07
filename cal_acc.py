@@ -5,7 +5,7 @@ import numpy as np
 def calculate_accuracy(label_path,true_label_path,FMapWidth,FMapHeight,save_path='./acc_result.txt'):
     """
     calculate the distance between the predict and ground truth
-    :param label_path: predict label path ,the form is img_path*img_width img_height labels ...
+    :param label_path: predict label path ,the form is img_path labels ...
     :param true_label_path:ground truth path,the form is imgName labels...
     :param FMapWidth:the width of the feature map which is the output of the model
     :param FMapHeight:the height of the feature map which is the output of the model
@@ -23,20 +23,13 @@ def calculate_accuracy(label_path,true_label_path,FMapWidth,FMapHeight,save_path
     with open(label_path) as f_label:
         contents=f_label.readlines()
         for line in contents:
-            content=line.split('*')
+            content=line.split(' ')
+
+
             #图片名
             name=content[0].split('/')[-1]
-            to_float=np.asarray([float(x) for x in content[1].split(' ')[:-1]])
-            #图片原始大小
-            img_width,img_height=to_float[0:2]
             #预测label
-            label=np.asarray(to_float[2:]).reshape(-1,2)
-
-
-            #还原到原图像大小
-            label[:,0]=label[:,0]*img_width/FMapWidth
-            label[:,1]=label[:,1]*img_height/FMapHeight
-
+            label=np.asarray([float(x) for x in content[1:-1]]).reshape(-1,2)
 
             for true_line in true_contents:
 
@@ -83,6 +76,7 @@ def cal_each_point_acc(acc_file_path):
 
     arr_loss=np.asarray(loss)
     each_loss=np.mean(arr_loss,axis=0)
+    print(each_loss)
 
 
 
