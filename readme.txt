@@ -15,3 +15,16 @@ cal_acc.py
 生成的acc_result文件为 distance....
 
 
+
+test.txt 中有横向的图片。。
+
+
+check_pro.py 计算某个点在某个概率区间的结果，按点保存到文件
+文件形式为：img_path labels pro
+
+cal_a_point.py 计算某个点的某个概率区间的误差值 ，统计各级误差的个数
+
+
+v1.1 使用新数据训练后的模型
+
+
