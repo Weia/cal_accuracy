@@ -17,7 +17,7 @@ def parse_true_line(line):
 
     pass
 
-def calculate_accuracy(label_path,true_label_path,pointNum,save_path='acc_result/acc_result.txt',del_over1000=True):
+def calculate_accuracy(label_path,true_label_path,pointNum,save_path='acc_result/acc_result.txt',del_over1000=False):
     """
     calculate the distance between the predict and ground truth
     this function only calculate one point file
@@ -87,14 +87,14 @@ def cal_each_point_acc(acc_file_path,root_path='mean_loss_result/'):
     """
     calculate the loss of each point
     :param acc_file_path: the path save the loss of the predict
-    :return: None
+    :return: loss的均值
     """
-    save_path=root_path+acc_file_path.split('/')[-1]
-    print(save_path)
+    #save_path=root_path+acc_file_path.split('/')[-1]
+    #print(save_path)
     with open(acc_file_path) as f_acc:
         contents=f_acc.readlines()
-    n_samples=len(contents)
-    print(n_samples)
+    # n_samples=len(contents)
+    #print(n_samples)
     loss=[]
     for line in contents:
         content=[float(x) for x in line.split(' ')[:-1]]
@@ -102,10 +102,10 @@ def cal_each_point_acc(acc_file_path,root_path='mean_loss_result/'):
 
     arr_loss=np.asarray(loss)
     each_loss=np.mean(arr_loss,axis=0)
-    print(each_loss)
-    with open(save_path,'w+') as f:
-
-        f.writelines(str(each_loss))
+    return each_loss
+    # with open(save_path,'w+') as f:
+    #
+    #     f.writelines(str(each_loss))
 
 
 

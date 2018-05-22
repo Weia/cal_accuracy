@@ -9,7 +9,7 @@ import cal_a_point
 
 
 def main():
-    label_path = 'v1.1/521_result.txt'
+    label_path = 'v1.1/model520_result.txt'
     true_label_path = 'test.txt'
 
     cal_acc.calculate_accuracy(label_path, true_label_path, del_over1000=False)
@@ -21,22 +21,24 @@ def main():
 def cal_a_point_loss(true_label_path,pointNum=0,level=0.9,cal_all=False):
     root_path='pro_result'
     files=os.listdir(root_path)
-    if cal_all:
-        for file in files:
-            label_path = root_path + '/' + file
-            save_path='acc_result/'+file
-            cal_a_point.calculate_accuracy(label_path, true_label_path, pointNum, save_path=save_path)
 
+    for file in files:
 
-    else:
-        for file in files:
-            pNum=int(file[0])
-            lev=float(file.split('_')[1][0:3])
-
+        label_path = root_path + '/' + file
+        save_path = 'acc_result/' + file
+        pNum = int(file.split('o')[0])
+        lev = float('-inf') if file.split('_')[1][0:3]=='-in' else float(file.split('_')[1][0:3])
+        print(file, pNum, lev)
+        if cal_all:
+            cal_a_point.calculate_accuracy(label_path, true_label_path, pNum, save_path=save_path)
+        else:
             if pNum==pointNum and lev==level:
                 label_path = root_path + '/' + file
-                save_path='acc_result/'+str(pNum)+'_'+str(lev)+'_result.txt'
+                save_path='acc_result/'+file
                 cal_a_point.calculate_accuracy(label_path,true_label_path,pointNum,save_path=save_path)
+                break
+
+
 
 
 
@@ -68,9 +70,28 @@ if __name__ == '__main__':
     # analyze_csv(csv_path='v1.1/result386019/statistic_result.csv')
     # print('575319')
     # analyze_csv('v1.1/result575319/statistic_result.csv')
-    true_label_path = 'test.txt'
-    cal_a_point_loss(true_label_path,cal_all=True)
-    # cal_a_point.cal_each_point_acc('acc_result/3_0.9_result.txt')
+    # true_label_path = 'test.txt'
+    #
+    # # cal_a_point_loss(true_label_path,cal_all=True)
+    # acc_files=os.listdir('acc_result')
+    # final_mean_result=np.zeros([16,11])
+    #
+    # for file in acc_files:
+    #     num=int(file.split('o')[0])
+    #
+    #     level=10 if file.split('_')[1][0:3]=='-in' else int(file.split('_')[1][2:3])
+    #
+    #     a_point_mean_loss=cal_a_point.cal_each_point_acc('acc_result/'+file)
+    #     final_mean_result[num][level]=a_point_mean_loss[0]
+    # with open('mean_loss_result/mean_loss.csv','w') as f :
+    #     writer=csv.writer(f)
+    #     writer.writerows(final_mean_result)
+    main()
+
+
+
+
+
 
 
 # with open('v0.0/result/name.txt') as f:

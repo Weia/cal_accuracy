@@ -3,7 +3,7 @@ import numpy as np
 import csv
 
 #计算预测值与实际值的距离，16个点的距离，label形式不包括pro
-def calculate_accuracy(label_path,true_label_path,save_path='result/acc_result.txt',del_over1000=True):
+def calculate_accuracy(label_path,true_label_path,save_path='result/acc_result.txt',del_over1000=False):
     """
     calculate the distance between the predict and ground truth
     :param label_path: predict label path ,the form is img_path labels ...
@@ -65,6 +65,7 @@ def calculate_accuracy(label_path,true_label_path,save_path='result/acc_result.t
                     str_loss+='\n'
 
                     loss.append(str_loss)
+                    break
 
 
     #写入文件

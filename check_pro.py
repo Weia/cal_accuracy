@@ -2,6 +2,23 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+
+def is_full_people(label,less_pro):
+    """
+    根据头顶点、脚底点、左右腕点出现的概率，判断图片中人体是否完整
+    :param label: (16,3)的标记值
+    :less_pro float 低于这个概率的值认为没有检测到
+    :return: True or False list [5],五个位置分别标记，头顶点、左右腕点、脚底点、人体，
+    """
+    index=[0,11,12,15]
+    pro_list=label[index][:,2]
+    result_list=[x>less_pro for x in pro_list]
+    body=False if False in result_list else True
+    result_list.append(body)
+
+    return result_list
+
+
 def check_point_pro(model_result_file):
     #查看点的概率和在图片中的位置
     with open(model_result_file) as f_result:
@@ -22,6 +39,16 @@ def check_point_pro(model_result_file):
         #     plt.imshow(img)
         #     plt.plot(arr_label[0,0],arr_label[0,1],'r+')
         #     plt.show()
+def read_result_file(file_path):
+    #读取result_file,txt文件,并返回文件内容
+    try:
+        with open(file_path) as f:
+            contents=f.readlines()
+    except FileNotFoundError :
+        raise FileNotFoundError('not found the file : '+file_path)
+
+    return contents
+
 
 def parse_result_file_a_line(line):
     #解析load_model产生的文件
@@ -54,15 +81,15 @@ def cal_over_pro(model_result_file,pointNum,low_pro,high_pro=1.0):
     return result
 
 
-def cal_over_pro_and_save(model_result_file,pro_level,pointNum):
+def cal_over_pro_and_save(model_result_file,pro_level,pointNum,high_pro=1.0):
     #处理多个level和多个点
     for level in pro_level:
-        print('deal_with_over_level:'+str(level))
-        all_result = cal_over_pro(model_result_file, pointNum, level)
+        print('deal_with_over_level:'+str(level)[0:3])
+        all_result = cal_over_pro(model_result_file, pointNum, level,high_pro)
         for index, point in enumerate(pointNum):
             a_result = all_result[index]
             # print('result/' + str(point) + 'over_' + str(level) + '.txt')
-            f_save = open('pro_result/' + str(point) + 'over_' + str(level) + '.txt', 'w')
+            f_save = open('pro_result/' + str(point) + 'over_' + str(level)[0:3] + '.txt', 'w')
             for i in range(len(a_result)):
                 # print(a_result[i][0])
                 f_save.write(a_result[i][0] + ' ')
@@ -75,15 +102,71 @@ def cal_over_pro_and_save(model_result_file,pro_level,pointNum):
 
             f_save.close()
 
+def write_to_file(save_path,content):
+    with open(save_path,'w') as f:
+        for line in content:
+            f.write(line)
+    print('write to file %s success '%(save_path))
 
 
-model_result_file='v1.1/520_result.txt'
-# cal_over_pro(model_result_file,[0,1,2],0.5,0.6)
-# check_point_pro(model_result_file)
+
+def show_img(img_path):
+    #显示图片
+    img=Image.open(img_path)
+    plt.imshow(img)
+    plt.show()
 
 
-pro_level=[i/10 for i in range(1,10)]
 
-pointNum=[i for i in range(16)]
-cal_over_pro_and_save(model_result_file,pro_level,pointNum)
+# pro_level=[float('-inf')]
+#
+# pointNum=[i for i in range(16)]
+# cal_over_pro_and_save(model_result_file,pro_level,pointNum)
+
+def main(less_pro):
+    #将低于less_pro的图片认为是不完整图片并写入文件
+    model_result_file = 'v1.1/520_result.txt'
+    try:
+        content = read_result_file(model_result_file)
+    except Exception as info:
+        print(info)
+        exit()
+    else:
+        not_full_list = [list() for x in range(5)]  # 头顶点、左右腕点、脚底点、人体，
+        root_save_path = 'not_full_image/'
+        files_name = ['head.txt', 'left.txt', 'right.txt', 'foot.txt', 'body.txt']
+        #less_pro = 0.1
+        for line in content:
+            imgName, labels = parse_result_file_a_line(line)
+            is_full_list = is_full_people(labels, less_pro)
+            # print(is_full_list)
+            for index, tf in enumerate(is_full_list):
+                if tf:
+                    continue
+                else:
+                    not_full_list[index].append(line)
+        for index, file_name in enumerate(files_name):
+            save_path = root_save_path + str(less_pro) + file_name
+            # print(save_path)
+            write_to_file(save_path, not_full_list[index])
+
+
+def show_not_full_image(not_full_image_path):
+    content=read_result_file(not_full_image_path)
+    for line in content:
+        img_path,labels=parse_result_file_a_line(line)
+        print(img_path)
+        show_img(img_path)
+
+
+show_not_full_image('not_full_image/0.4left.txt')
+
+# main(0.2)
+# main(0.3)
+# main(0.4)
+# main(0.5)
+# main(0.6)
+# main(0.7)
+# main(0.8)
+# main(0.9)
 
