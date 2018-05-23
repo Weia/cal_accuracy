@@ -73,6 +73,7 @@ def calculate_accuracy(label_path,true_label_path,pointNum,save_path='acc_result
 
                     str_loss+=str(a_loss_result)
                     str_loss+=' '
+                    str_loss+=str(label[pointNum][-1])+' '
                     str_loss+='\n'
                     loss.append(str_loss)
                     break

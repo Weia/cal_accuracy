@@ -156,10 +156,21 @@ def show_not_full_image(not_full_image_path):
     for line in content:
         img_path,labels=parse_result_file_a_line(line)
         print(img_path)
-        show_img(img_path)
+        try:
+            show_img(img_path)
+        except FileNotFoundError :
+            if '新加卷1' in img_path:
+                img_path=img_path.replace('新加卷1','新加卷')
+            else:
+                img_path=img_path.replace('新加卷','新加卷1')
+            try:
+                show_img(img_path)
+            except Exception as info:
+                print(info)
+                continue
 
 
-show_not_full_image('not_full_image/0.4left.txt')
+# show_not_full_image('not_full_image/0.4body.txt')
 
 # main(0.2)
 # main(0.3)
@@ -169,4 +180,5 @@ show_not_full_image('not_full_image/0.4left.txt')
 # main(0.7)
 # main(0.8)
 # main(0.9)
+# main(1.0)
 
