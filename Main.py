@@ -9,7 +9,7 @@ import cal_a_point
 
 
 def main():
-    label_path = 'v1.1/model520_result.txt'
+    label_path = 'final_result/final_test_result.txt'
     true_label_path = 'test.txt'
 
     cal_acc.calculate_accuracy(label_path, true_label_path, del_over1000=False)
